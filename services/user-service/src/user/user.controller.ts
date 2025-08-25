@@ -4,12 +4,12 @@ import { UserService } from './user.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { User } from './entities/user.entity';
-import { multerConfig } from '../shared/config/multer.config';
-import { JwtAuthGuard } from '../shared/guards/jwt-auth.guard';
-import { RolesGuard } from '../shared/guards/roles.guard';
-import { Roles } from '../shared/decorators/roles.decorator';
-import { Role } from '../shared/enums/role.enum';
-import { AuthenticatedRequest } from '../shared/interfaces/authenticated-request.interface';
+import { multerConfig } from '../utils/config/multer.config';
+import { JwtAuthGuard } from '../utils/guards/jwt-auth.guard';
+import { RolesGuard } from '../utils/guards/roles.guard';
+import { Roles } from '../utils/decorators/roles.decorator';
+import { Role } from '../utils/enums/role.enum';
+import { AuthenticatedRequest } from '../utils/interfaces/authenticated-request.interface';
 
 @Controller('employees')
 @UseGuards(JwtAuthGuard, RolesGuard)

@@ -137,6 +137,6 @@ export class AttendanceService {
   private calculateHoursWorked(clockInTime: Date, clockOutTime: Date): number {
     const diffInMs = clockOutTime.getTime() - clockInTime.getTime();
     const diffInHours = diffInMs / (1000 * 60 * 60);
-    return Math.round(diffInHours * 100) / 100; // Round to 2 decimal places
+    return Math.round(diffInHours * 100) / 100;
   }
 }

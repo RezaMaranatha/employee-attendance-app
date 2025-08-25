@@ -1,5 +1,5 @@
 import { IsString, IsEmail, IsEnum, IsBoolean } from 'class-validator';
-import { Role } from '../../shared/enums/role.enum';
+import { Role } from '../../utils/enums/role.enum';
 
 export class ValidateTokenDto {
   @IsString()

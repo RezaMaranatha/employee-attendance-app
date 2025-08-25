@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { HealthController } from './health/health.controller';
-import { User } from './database/entities/user.entity';
+import { User } from './entities/user.entity';
 
 @Module({
   imports: [

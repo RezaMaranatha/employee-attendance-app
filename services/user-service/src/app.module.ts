@@ -9,7 +9,7 @@ import { join } from 'path';
 import { UserModule } from './user/user.module';
 import { HealthController } from './health/health.controller';
 import { User } from './user/entities/user.entity';
-import { JwtStrategy } from './shared/strategies/jwt.strategy';
+import { JwtStrategy } from './utils/strategies/jwt.strategy';
 
 @Module({
   imports: [

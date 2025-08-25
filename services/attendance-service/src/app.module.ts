@@ -7,7 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AttendanceModule } from './attendance/attendance.module';
 import { HealthController } from './health/health.controller';
 import { Attendance } from './attendance/entities/attendance.entity';
-import { JwtStrategy } from './shared/strategies/jwt.strategy';
+import { JwtStrategy } from './utils/strategies/jwt.strategy';
 
 @Module({
   imports: [

@@ -4,11 +4,11 @@ import { ClockInDto } from './dto/clock-in.dto';
 import { ClockOutDto } from './dto/clock-out.dto';
 import { AttendanceQueryDto } from './dto/attendance-query.dto';
 import { Attendance } from './entities/attendance.entity';
-import { JwtAuthGuard } from '../shared/guards/jwt-auth.guard';
-import { RolesGuard } from '../shared/guards/roles.guard';
-import { Roles } from '../shared/decorators/roles.decorator';
-import { Role } from '../shared/enums/role.enum';
-import { AuthenticatedRequest } from '../shared/interfaces/authenticated-request.interface';
+import { JwtAuthGuard } from '../utils/guards/jwt-auth.guard';
+import { RolesGuard } from '../utils/guards/roles.guard';
+import { Roles } from '../utils/decorators/roles.decorator';
+import { Role } from '../utils/enums/role.enum';
+import { AuthenticatedRequest } from '../utils/interfaces/authenticated-request.interface';
 
 @Controller('attendance')
 @UseGuards(JwtAuthGuard, RolesGuard)

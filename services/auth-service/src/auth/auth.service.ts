@@ -2,12 +2,12 @@ import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/co
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../database/entities/user.entity';
+import { User } from '../entities/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { ValidateTokenDto } from './dto/validate-token.dto';
-import { Role } from '../shared/enums/role.enum';
+import { Role } from '../utils/enums/role.enum';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()

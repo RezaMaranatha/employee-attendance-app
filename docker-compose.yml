@@ -1,0 +1,124 @@
+version: '3.8'
+
+services:
+  # Databases
+  auth-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: auth_service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+
+  employee-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: employee_service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    volumes:
+      - employee_db_data:/var/lib/postgresql/data
+
+  attendance-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: attendance_service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5434:5432"
+    volumes:
+      - attendance_db_data:/var/lib/postgresql/data
+
+  # Services
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=auth-db
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=password
+      - DB_DATABASE=auth_service
+      - JWT_SECRET=your-super-secret-jwt-key-here
+      - JWT_EXPIRES_IN=7d
+      - PORT=3001
+    depends_on:
+      - auth-db
+    volumes:
+      - ./services/auth-service:/app
+      - /app/node_modules
+
+  employee-service:
+    build:
+      context: ./services/employee-service
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=employee-db
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=password
+      - DB_DATABASE=employee_service
+      - PORT=3002
+    depends_on:
+      - employee-db
+    volumes:
+      - ./services/employee-service:/app
+      - /app/node_modules
+
+  attendance-service:
+    build:
+      context: ./services/attendance-service
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=attendance-db
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=password
+      - DB_DATABASE=attendance_service
+      - PORT=3003
+    depends_on:
+      - attendance-db
+    volumes:
+      - ./services/attendance-service:/app
+      - /app/node_modules
+
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - EMPLOYEE_SERVICE_URL=http://employee-service:3002
+      - ATTENDANCE_SERVICE_URL=http://attendance-service:3003
+    depends_on:
+      - auth-service
+      - employee-service
+      - attendance-service
+    volumes:
+      - ./services/api-gateway:/app
+      - /app/node_modules
+
+volumes:
+  auth_db_data:
+  employee_db_data:
+  attendance_db_data:

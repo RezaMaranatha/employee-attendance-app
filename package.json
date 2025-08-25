@@ -1,0 +1,23 @@
+{
+  "name": "employee-attendance-microservices",
+  "version": "1.0.0",
+  "description": "Employee Attendance Management System - Microservices Architecture",
+  "scripts": {
+    "setup": "./setup-local.sh",
+    "dev:auth": "cd services/auth-service && npm run start:dev",
+    "dev:employee": "cd services/employee-service && npm run start:dev",
+    "dev:attendance": "cd services/attendance-service && npm run start:dev",
+    "dev:gateway": "cd services/api-gateway && npm run start:dev",
+    "build:all": "cd services/auth-service && npm run build && cd ../employee-service && npm run build && cd ../attendance-service && npm run build && cd ../api-gateway && npm run build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:build": "docker-compose build",
+    "create-admin": "cd services/auth-service && npm run create-admin",
+    "test:health": "curl http://localhost:3000/health",
+    "test:health:all": "echo 'Testing all health endpoints...' && echo 'Auth Service:' && curl http://localhost:3001/health && echo '' && echo 'Employee Service:' && curl http://localhost:3002/health && echo '' && echo 'Attendance Service:' && curl http://localhost:3003/health && echo '' && echo 'API Gateway:' && curl http://localhost:3000/health"
+  },
+  "keywords": ["microservices", "nestjs", "attendance", "employee", "management"],
+  "author": "",
+  "license": "MIT"
+}

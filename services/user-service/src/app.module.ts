@@ -32,9 +32,9 @@ import { JwtStrategy } from './utils/strategies/jwt.strategy';
       port: parseInt(process.env.DB_PORT || '5432'),
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || 'password',
-      database: process.env.DB_DATABASE || 'employee_service',
+      database: process.env.DB_DATABASE || 'attendance_app',
       entities: [User],
-      synchronize: false,
+      synchronize: false
     }),
     UserModule,
   ],

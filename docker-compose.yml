@@ -1,39 +1,17 @@
 version: '3.8'
 
 services:
-  # Databases
-  auth-db:
+  # Single PostgreSQL Database
+  postgres:
     image: postgres:15
     environment:
-      POSTGRES_DB: auth_service
+      POSTGRES_DB: attendance_app
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     ports:
       - '5432:5432'
     volumes:
-      - auth_db_data:/var/lib/postgresql/data
-
-  employee-db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: employee_service
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-    ports:
-      - '5433:5432'
-    volumes:
-      - employee_db_data:/var/lib/postgresql/data
-
-  attendance-db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: attendance_service
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-    ports:
-      - '5434:5432'
-    volumes:
-      - attendance_db_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
 
   # Services
   auth-service:
@@ -44,39 +22,33 @@ services:
       - '3001:3001'
     environment:
       - NODE_ENV=development
-      - DB_HOST=auth-db
+      - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USERNAME=postgres
       - DB_PASSWORD=password
-      - DB_DATABASE=auth_service
+      - DB_DATABASE=attendance_app
       - JWT_SECRET=default-secret
       - JWT_EXPIRES_IN=7d
       - PORT=3001
     depends_on:
-      - auth-db
-    volumes:
-      - ./services/auth-service:/app
-      - /app/node_modules
+      - postgres
 
   employee-service:
     build:
-      context: ./services/employee-service
+      context: ./services/user-service
       dockerfile: Dockerfile
     ports:
       - '3002:3002'
     environment:
       - NODE_ENV=development
-      - DB_HOST=employee-db
+      - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USERNAME=postgres
       - DB_PASSWORD=password
-      - DB_DATABASE=employee_service
+      - DB_DATABASE=attendance_app
       - PORT=3002
     depends_on:
-      - employee-db
-    volumes:
-      - ./services/employee-service:/app
-      - /app/node_modules
+      - postgres
 
   attendance-service:
     build:
@@ -86,17 +58,14 @@ services:
       - '3003:3003'
     environment:
       - NODE_ENV=development
-      - DB_HOST=attendance-db
+      - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USERNAME=postgres
       - DB_PASSWORD=password
-      - DB_DATABASE=attendance_service
+      - DB_DATABASE=attendance_app
       - PORT=3003
     depends_on:
-      - attendance-db
-    volumes:
-      - ./services/attendance-service:/app
-      - /app/node_modules
+      - postgres
 
   api-gateway:
     build:
@@ -114,11 +83,29 @@ services:
       - auth-service
       - employee-service
       - attendance-service
-    volumes:
-      - ./services/api-gateway:/app
-      - /app/node_modules
+
+  # Frontend Applications
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '3004:80'
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000
+    depends_on:
+      - api-gateway
+
+  admin-frontend:
+    build:
+      context: ./admin-frontend
+      dockerfile: Dockerfile
+    ports:
+      - '3005:80'
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000
+    depends_on:
+      - api-gateway
 
 volumes:
-  auth_db_data:
-  employee_db_data:
-  attendance_db_data:
+  postgres_data:

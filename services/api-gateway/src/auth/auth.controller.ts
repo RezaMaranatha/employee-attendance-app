@@ -17,7 +17,8 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() loginDto: any) {
-    const authServiceUrl = 'http://localhost:3001';
+    const authServiceUrl =
+      process.env.AUTH_SERVICE_URL || 'http://localhost:3001';
     const response = await firstValueFrom(
       this.httpService.post(`${authServiceUrl}/auth/login`, loginDto),
     );

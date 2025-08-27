@@ -31,6 +31,7 @@ export interface CreateEmployeeRequest {
   department?: string;
   position?: string;
   phoneNumber?: string;
+  role?: 'admin' | 'employee';
 }
 
 export interface UpdateEmployeeRequest {

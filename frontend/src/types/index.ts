@@ -25,6 +25,7 @@ export interface RegisterRequest {
   password: string;
   firstName: string;
   lastName: string;
+  phoneNumber?: string;
   department?: string;
   position?: string;
   role: 'admin' | 'employee';

@@ -22,4 +22,16 @@ export class RegisterDto {
   @IsEnum(Role)
   @IsOptional()
   role?: Role;
+
+  @IsString()
+  @IsOptional()
+  phoneNumber?: string;
+
+  @IsString()
+  @IsOptional()
+  department?: string;
+
+  @IsString()
+  @IsOptional()
+  position?: string;
 }

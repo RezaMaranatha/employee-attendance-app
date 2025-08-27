@@ -17,6 +17,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({ employee, onClose, onSubm
     phoneNumber: '',
     department: '',
     position: '',
+    role: 'employee' as 'admin' | 'employee',
   });
   const [loading, setLoading] = useState(false);
 
@@ -32,6 +33,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({ employee, onClose, onSubm
         phoneNumber: employee.phoneNumber || '',
         department: employee.department || '',
         position: employee.position || '',
+        role: employee.role,
       });
     }
   }, [employee]);
@@ -59,6 +61,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({ employee, onClose, onSubm
           phoneNumber: formData.phoneNumber,
           department: formData.department,
           position: formData.position,
+          role: formData.role,
         };
         await onSubmit(createData);
       }
@@ -202,6 +205,20 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({ employee, onClose, onSubm
                   placeholder="Position"
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Role
+              </label>
+              <select
+                value={formData.role}
+                onChange={(e) => handleChange('role', e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="employee">Employee</option>
+                <option value="admin">Admin</option>
+              </select>
             </div>
 
             {/* Actions */}

@@ -46,6 +46,7 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=password
       - DB_DATABASE=attendance_app
+      - JWT_SECRET=default-secret
       - PORT=3002
     depends_on:
       - postgres
@@ -63,6 +64,7 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=password
       - DB_DATABASE=attendance_app
+      - JWT_SECRET=default-secret
       - PORT=3003
     depends_on:
       - postgres
@@ -76,6 +78,7 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3000
+      - JWT_SECRET=default-secret
       - AUTH_SERVICE_URL=http://auth-service:3001
       - EMPLOYEE_SERVICE_URL=http://employee-service:3002
       - ATTENDANCE_SERVICE_URL=http://attendance-service:3003
@@ -89,10 +92,10 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=http://localhost:3000
     ports:
       - '3004:80'
-    environment:
-      - REACT_APP_API_URL=http://localhost:3000
     depends_on:
       - api-gateway
 
@@ -100,10 +103,10 @@ services:
     build:
       context: ./admin-frontend
       dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=http://localhost:3000
     ports:
       - '3005:80'
-    environment:
-      - REACT_APP_API_URL=http://localhost:3000
     depends_on:
       - api-gateway
 

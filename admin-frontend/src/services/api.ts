@@ -69,7 +69,7 @@ class ApiService {
   }
 
   async createEmployee(employeeData: CreateEmployeeRequest): Promise<User> {
-    const response = await this.api.post<User>('/users', employeeData);
+    const response = await this.api.post<User>('/auth/register', employeeData);
     return response.data;
   }
 

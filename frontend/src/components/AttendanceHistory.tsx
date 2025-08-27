@@ -76,41 +76,10 @@ const AttendanceHistory: React.FC = () => {
     return `${diffHours.toFixed(2)} hours`;
   };
 
-  const exportToCSV = () => {
-    const headers = ['Date', 'Clock In', 'Clock Out', 'Hours Worked', 'Status', 'Notes'];
-    const csvContent = [
-      headers.join(','),
-      ...attendanceRecords.map(record => [
-        formatDate(record.clockInTime),
-        formatTime(record.clockInTime),
-        record.clockOutTime ? formatTime(record.clockOutTime) : 'N/A',
-        calculateHoursWorked(record.clockInTime, record.clockOutTime),
-        record.status,
-        record.notes || 'N/A'
-      ].join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `attendance-${format(new Date(), 'yyyy-MM-dd')}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-    toast.success('Attendance data exported successfully!');
-  };
-
   return (
     <div className="card">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Attendance History</h2>
-        <button
-          onClick={exportToCSV}
-          className="btn-primary flex items-center"
-        >
-          <Download className="h-4 w-4 mr-2" />
-          Export CSV
-        </button>
       </div>
 
       {/* Filters */}

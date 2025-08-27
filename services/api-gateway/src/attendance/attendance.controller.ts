@@ -84,12 +84,9 @@ export class AttendanceController {
 
     try {
       const response = await firstValueFrom(
-        this.httpService.get(
-          `${attendanceServiceUrl}/attendance/status/${req.user.id}`,
-          {
-            headers: { authorization: auth },
-          },
-        ),
+        this.httpService.get(`${attendanceServiceUrl}/attendance/my-status`, {
+          headers: { authorization: auth },
+        }),
       );
       return response.data;
     } catch (error) {

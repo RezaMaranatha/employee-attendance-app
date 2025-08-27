@@ -1,10 +1,11 @@
-import { IsString, IsNotEmpty, IsOptional, IsDateString, IsUUID } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsDateString,
+} from 'class-validator';
 
 export class CreateEmployeeDto {
-  @IsUUID()
-  @IsNotEmpty()
-  id: string; // User ID from auth service
-
   @IsString()
   @IsNotEmpty()
   email: string;

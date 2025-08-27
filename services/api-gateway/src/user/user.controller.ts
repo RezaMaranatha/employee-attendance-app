@@ -96,13 +96,9 @@ export class UserController {
     const employeeServiceUrl =
       process.env.EMPLOYEE_SERVICE_URL || 'http://localhost:3002';
     const response = await firstValueFrom(
-      this.httpService.put(
-        `${employeeServiceUrl}/users/${req.user.id}`,
-        updateDto,
-        {
-          headers: { authorization: auth },
-        },
-      ),
+      this.httpService.put(`${employeeServiceUrl}/users/profile`, updateDto, {
+        headers: { authorization: auth },
+      }),
     );
     return response.data;
   }

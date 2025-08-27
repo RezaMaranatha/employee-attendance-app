@@ -41,12 +41,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setToken(storedToken);
           setUser(JSON.parse(storedUser));
           
-          // Validate token with backend
           const validatedUser = await apiService.validateToken();
           setUser(validatedUser);
           localStorage.setItem('user', JSON.stringify(validatedUser));
         } catch (error) {
-          // Token is invalid, clear storage
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           setToken(null);

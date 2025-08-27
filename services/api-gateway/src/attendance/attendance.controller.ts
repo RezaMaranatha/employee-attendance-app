@@ -29,7 +29,6 @@ export class AttendanceController {
       process.env.ATTENDANCE_SERVICE_URL || 'http://localhost:3003';
     try {
       const payload = { employeeId: req.user.id, ...clockInDto };
-      console.log(payload);
       const response = await firstValueFrom(
         this.httpService.post(
           `${attendanceServiceUrl}/attendance/clock-in`,

@@ -57,7 +57,6 @@ export class UserController {
   @Get()
   @Roles(Role.ADMIN)
   async findOne(@Query('id') id: string): Promise<User> {
-    console.log('get one');
     return this.userService.findById(id);
   }
 
@@ -125,14 +124,12 @@ export class UserController {
 
   @Get('photo')
   async servePhoto(@Query('filename') filename: string, @Res() res: Response) {
-    console.log(filename);
     const photoPath = path.join(
       process.cwd(),
       'uploads',
       'profile-photos',
       filename,
     );
-    console.log(filename);
     if (!fs.existsSync(photoPath)) {
       return res.status(404).json({ message: 'Photo not found' });
     }

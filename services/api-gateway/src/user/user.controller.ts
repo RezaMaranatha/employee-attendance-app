@@ -46,7 +46,6 @@ export class UserController {
   async findAll(@Headers('authorization') auth: string) {
     const employeeServiceUrl =
       process.env.EMPLOYEE_SERVICE_URL || 'http://localhost:3002';
-    console.log('find all');
     const response = await firstValueFrom(
       this.httpService.get(`${employeeServiceUrl}/users/findAll`, {
         headers: { authorization: auth },
@@ -58,7 +57,6 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get('profile')
   async getProfile(@Request() req, @Headers('authorization') auth: string) {
-    console.log('masuk');
     const employeeServiceUrl =
       process.env.EMPLOYEE_SERVICE_URL || 'http://localhost:3002';
     const response = await firstValueFrom(
@@ -75,7 +73,6 @@ export class UserController {
     @Query('id') id: string,
     @Headers('authorization') auth: string,
   ) {
-    console.log(id);
     const employeeServiceUrl =
       process.env.EMPLOYEE_SERVICE_URL || 'http://localhost:3002';
     const response = await firstValueFrom(
@@ -182,7 +179,6 @@ export class UserController {
     @UploadedFile() file: any,
     @Headers('authorization') auth: string,
   ) {
-    console.log('masuk sini');
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
@@ -254,8 +250,6 @@ export class UserController {
   ) {
     const employeeServiceUrl =
       process.env.EMPLOYEE_SERVICE_URL || 'http://localhost:3002';
-    console.log('get profile photo');
-    console.log(`${employeeServiceUrl}/users/photo`);
 
     try {
       const response = await firstValueFrom(

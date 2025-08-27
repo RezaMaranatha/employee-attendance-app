@@ -30,7 +30,6 @@ export class AuthController {
     @Body() registerDto: any,
     @Headers('authorization') auth: string,
   ) {
-    console.log(auth);
     const authServiceUrl =
       process.env.AUTH_SERVICE_URL || 'http://localhost:3001';
     const response = await firstValueFrom(

@@ -11,7 +11,7 @@
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/RezaMaranatha/employee-attendance-app.git
    cd attendance-app
    ```
 

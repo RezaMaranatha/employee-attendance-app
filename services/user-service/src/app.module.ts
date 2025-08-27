@@ -34,7 +34,7 @@ import { JwtStrategy } from './utils/strategies/jwt.strategy';
       password: process.env.DB_PASSWORD || 'password',
       database: process.env.DB_DATABASE || 'attendance_app',
       entities: [User],
-      synchronize: false
+      synchronize: false,
     }),
     UserModule,
   ],

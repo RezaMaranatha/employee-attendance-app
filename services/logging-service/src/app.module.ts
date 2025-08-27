@@ -17,10 +17,10 @@ import { UserChangeLog } from './entities/user-change-log.entity';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.get('DB_HOST', 'localhost'),
-        port: configService.get('DB_PORT', 5432),
+        port: configService.get('DB_PORT', 5433),
         username: configService.get('DB_USERNAME', 'postgres'),
         password: configService.get('DB_PASSWORD', 'password'),
-        database: configService.get('DB_DATABASE', 'attendance_app'),
+        database: configService.get('DB_DATABASE', 'logging_db'),
         entities: [UserChangeLog],
         synchronize: false,
         logging: false,

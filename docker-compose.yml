@@ -1,5 +1,5 @@
 services:
-  # Single PostgreSQL Database
+  # Main PostgreSQL Database
   postgres:
     image: postgres:15
     environment:
@@ -10,6 +10,18 @@ services:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  # Logging PostgreSQL Database
+  logging-postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: logging_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - '5433:5432'
+    volumes:
+      - logging_postgres_data:/var/lib/postgresql/data
 
   # Kafka
   kafka:
@@ -155,15 +167,16 @@ services:
     environment:
       - NODE_ENV=development
       - KAFKA_BROKERS=localhost:9092
-      - DB_HOST=postgres
+      - DB_HOST=logging-postgres
       - DB_PORT=5432
       - DB_USERNAME=postgres
       - DB_PASSWORD=password
-      - DB_DATABASE=attendance_app
+      - DB_DATABASE=logging_db
     depends_on:
       - kafka
-      - postgres
+      - logging-postgres
     restart: unless-stopped
 
 volumes:
   postgres_data:
+  logging_postgres_data:

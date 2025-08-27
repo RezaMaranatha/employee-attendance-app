@@ -110,7 +110,7 @@ export class AttendanceController {
     try {
       const response = await firstValueFrom(
         this.httpService.get(
-          `${attendanceServiceUrl}/attendance/employee/${req.user.id}`,
+          `${attendanceServiceUrl}/attendance/my-attendance`,
           {
             params: queryDto,
             headers: { authorization: auth },

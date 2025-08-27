@@ -126,6 +126,10 @@ export class AttendanceService {
       );
     }
 
+    if (queryDto.status) {
+      whereClause.status = queryDto.status;
+    }
+
     return this.attendanceRepository.find({
       where: whereClause,
       order: { clockInTime: 'DESC' },

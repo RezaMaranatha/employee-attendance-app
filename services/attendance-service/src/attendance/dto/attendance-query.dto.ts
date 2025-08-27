@@ -12,4 +12,7 @@ export class AttendanceQueryDto {
   @IsOptional()
   @IsUUID()
   employeeId?: string;
+
+  @IsOptional()
+  status?: string;
 }

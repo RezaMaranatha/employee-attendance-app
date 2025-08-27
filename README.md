@@ -1,17 +1,5 @@
 # Attendance Management System
 
-A full-stack attendance management application with separate frontends for employees and administrators.
-
-## 🏗️ Architecture
-
-- **Frontend (Employee Portal)**: React app for employees to clock in/out
-- **Admin Frontend**: React app for administrators to manage employees and monitor attendance
-- **API Gateway**: NestJS service that routes requests to microservices
-- **Auth Service**: Handles authentication and user management
-- **User Service**: Manages employee data and profiles
-- **Attendance Service**: Handles attendance records and time tracking
-- **Database**: Single PostgreSQL database shared across all services
-
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -29,19 +17,42 @@ A full-stack attendance management application with separate frontends for emplo
 
 2. **Start all services**
    ```bash
-   docker-compose up --build
+   docker-compose up -d
    ```
 
 3. **Access the applications**
    - **Employee Portal**: http://localhost:3004
    - **Admin Dashboard**: http://localhost:3005
    - **API Gateway**: http://localhost:3000
+   - **Logging Service**: http://localhost:3006
+
+### Step-by-Step Startup (Recommended for Troubleshooting)
+
+1. **Start databases and Kafka first**
+   ```bash
+   docker-compose up -d postgres logging-postgres kafka kafka-setup
+   ```
+
+2. **Wait 30 seconds for databases to be ready, then start backend services**
+   ```bash
+   docker-compose up -d auth-service employee-service attendance-service api-gateway
+   ```
+
+3. **Start frontend applications**
+   ```bash
+   docker-compose up -d frontend admin-frontend
+   ```
+
+4. **Start logging service**
+   ```bash
+   docker-compose up -d logging-service
+   ```
 
 ### Local Development
 
-1. **Start the database**
+1. **Start the databases and Kafka**
    ```bash
-   docker-compose up postgres
+   docker-compose up -d postgres logging-postgres kafka
    ```
 
 2. **Start backend services** (in separate terminals)
@@ -57,6 +68,9 @@ A full-stack attendance management application with separate frontends for emplo
 
    # Attendance Service
    cd services/attendance-service && npm run start:dev
+
+   # Logging Service
+   cd services/logging-service && npm run start:dev
    ```
 
 3. **Start frontend applications** (in separate terminals)
@@ -68,19 +82,6 @@ A full-stack attendance management application with separate frontends for emplo
    cd admin-frontend && npm start
    ```
 
-## 📱 Applications
-
-### Employee Portal (Port 3004)
-- Clock in/out functionality
-- View attendance history
-- Profile management
-- Real-time status updates
-
-### Admin Dashboard (Port 3005)
-- Employee management (CRUD operations)
-- Attendance monitoring
-- User registration (admin only)
-- System overview
 
 ## 🔧 Configuration
 
@@ -89,16 +90,26 @@ A full-stack attendance management application with separate frontends for emplo
 The application uses the following environment variables:
 
 ```env
-# Database
+# Main Database
 DB_HOST=postgres
 DB_PORT=5432
 DB_USERNAME=postgres
 DB_PASSWORD=password
 DB_DATABASE=attendance_app
 
+# Logging Database
+DB_HOST=logging-postgres
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=password
+DB_DATABASE=logging_db
+
 # JWT
-JWT_SECRET=your-secret-key
+JWT_SECRET=default-secret
 JWT_EXPIRES_IN=7d
+
+# Kafka
+KAFKA_BROKERS=kafka:9092
 
 # Service URLs
 AUTH_SERVICE_URL=http://auth-service:3001
@@ -106,37 +117,10 @@ EMPLOYEE_SERVICE_URL=http://employee-service:3002
 ATTENDANCE_SERVICE_URL=http://attendance-service:3003
 ```
 
-### Default Admin Account
 
-When running for the first time, you'll need to create an admin account. The default password for new users is `password`.
 
-## 🗄️ Database
 
-The application uses a single PostgreSQL database with the following main tables:
 
-- `users` - Employee and admin user accounts
-- `attendances` - Attendance records and time tracking
-
-## 🔐 Authentication
-
-- JWT-based authentication
-- Role-based access control (Admin/Employee)
-- Token validation on protected routes
-- Automatic token refresh
-
-## 📊 Features
-
-### Employee Features
-- ✅ Clock in/out
-- ✅ View attendance history
-- ✅ Profile management
-- ✅ Real-time status
-
-### Admin Features
-- ✅ Employee management
-- ✅ Attendance monitoring
-- ✅ User registration
-- ✅ System administration
 
 ## 🛠️ Development
 
@@ -149,56 +133,50 @@ attendance-app/
 │   ├── api-gateway/         # API Gateway service
 │   ├── auth-service/        # Authentication service
 │   ├── user-service/        # User management service
-│   └── attendance-service/  # Attendance service
+│   ├── attendance-service/  # Attendance service
+│   └── logging-service/     # Logging service
 └── docker-compose.yml       # Docker configuration
 ```
 
-### Available Scripts
-
-**Backend Services:**
-```bash
-npm run start:dev    # Development mode with hot reload
-npm run build        # Build for production
-npm run start        # Production mode
-```
-
-**Frontend Applications:**
-```bash
-npm start           # Development server
-npm run build       # Build for production
-npm test            # Run tests
-```
 
 ## 🐳 Docker Services
 
 | Service | Port | Description |
 |---------|------|-------------|
-| postgres | 5432 | Database |
+| postgres | 5432 | Main database |
+| logging-postgres | 5433 | Logging database |
+| kafka | 9092 | Message queue |
 | api-gateway | 3000 | API Gateway |
 | auth-service | 3001 | Authentication |
 | user-service | 3002 | User Management |
 | attendance-service | 3003 | Attendance |
+| logging-service | 3006 | Logging service |
 | frontend | 3004 | Employee Portal |
 | admin-frontend | 3005 | Admin Dashboard |
+
+## 🔄 Kafka Integration
+
+The system uses Kafka for event-driven communication:
+
+### Topics
+- `user-data-changes` - User creation, updates, and deletion events
+
+### Events
+- `USER_CREATED` - When a new user is registered
+- `USER_UPDATED` - When user data is modified
+- `USER_DELETED` - When a user is deactivated
+
+### Services
+- **Producers**: Auth Service, User Service
+- **Consumer**: Logging Service
 
 ## 🚨 Troubleshooting
 
 ### Common Issues
 
-1. **Port conflicts**: Ensure ports 3000-3005 and 5432 are available
-2. **Database connection**: Wait for PostgreSQL to fully start before starting services
-3. **CORS issues**: Frontend is configured to connect to API Gateway at localhost:3000
+1. **Port conflicts**: Ensure ports 3000-3006, 5432-5433, and 9092 are available
+2. **Database connection**: Wait for PostgreSQL instances to fully start before starting services
+3. **Kafka connection**: Ensure Kafka is running before starting services that depend on it
+4. **CORS issues**: Frontend is configured to connect to API Gateway at localhost:3000
+5. For simplicity purposes i pushed the env vars to github
 
-### Logs
-```bash
-# View all logs
-docker-compose logs
-
-# View specific service logs
-docker-compose logs auth-service
-docker-compose logs frontend
-```
-
-## 📝 License
-
-This project is licensed under the MIT License.

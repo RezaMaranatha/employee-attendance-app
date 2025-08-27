@@ -22,6 +22,11 @@ services:
       - '5433:5432'
     volumes:
       - logging_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d logging_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Kafka
   kafka:
@@ -34,7 +39,7 @@ services:
       KAFKA_NODE_ID: 1
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
       KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9092,CONTROLLER://kafka:29093'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://localhost:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9092'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
@@ -51,9 +56,9 @@ services:
     command: >
       bash -c "
         echo 'Waiting for Kafka to be ready...'
-        cub kafka-ready -b kafka:29092 1 30
+        cub kafka-ready -b kafka:9092 1 30
         echo 'Creating topic: user-data-changes'
-        kafka-topics --create --if-not-exists --bootstrap-server kafka:29092 --topic user-data-changes --partitions 1 --replication-factor 1
+        kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic user-data-changes --partitions 1 --replication-factor 1
         echo 'Topic created successfully!'
       "
 
@@ -74,7 +79,7 @@ services:
       - JWT_SECRET=default-secret
       - JWT_EXPIRES_IN=7d
       - PORT=3001
-      - KAFKA_BROKERS=kafka:29092
+      - KAFKA_BROKERS=kafka:9092
     depends_on:
       - postgres
       - kafka
@@ -94,7 +99,7 @@ services:
       - DB_DATABASE=attendance_app
       - JWT_SECRET=default-secret
       - PORT=3002
-      - KAFKA_BROKERS=kafka:29092
+      - KAFKA_BROKERS=kafka:9092
     depends_on:
       - postgres
       - kafka
@@ -166,15 +171,17 @@ services:
       - '3006:3006'
     environment:
       - NODE_ENV=development
-      - KAFKA_BROKERS=localhost:9092
+      - KAFKA_BROKERS=kafka:9092
       - DB_HOST=logging-postgres
       - DB_PORT=5432
       - DB_USERNAME=postgres
       - DB_PASSWORD=password
       - DB_DATABASE=logging_db
     depends_on:
-      - kafka
-      - logging-postgres
+      kafka:
+        condition: service_started
+      logging-postgres:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:

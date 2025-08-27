@@ -9,7 +9,6 @@ import { Attendance, AttendanceStatus } from './entities/attendance.entity';
 import { ClockInDto } from './dto/clock-in.dto';
 import { ClockOutDto } from './dto/clock-out.dto';
 import { AttendanceQueryDto } from './dto/attendance-query.dto';
-import { log } from 'console';
 
 @Injectable()
 export class AttendanceService {
@@ -19,8 +18,6 @@ export class AttendanceService {
   ) {}
 
   async clockIn(clockInDto: ClockInDto): Promise<Attendance> {
-    // Check if employee already has an active clock-in
-    console.log(clockInDto);
     const activeAttendance = await this.attendanceRepository.findOne({
       where: {
         employeeId: clockInDto.employeeId,
@@ -44,7 +41,6 @@ export class AttendanceService {
   }
 
   async clockOut(clockOutDto: ClockOutDto): Promise<Attendance> {
-    // Find the active clock-in record
     const activeAttendance = await this.attendanceRepository.findOne({
       where: {
         employeeId: clockOutDto.employeeId,

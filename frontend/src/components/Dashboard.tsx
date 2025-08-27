@@ -9,7 +9,6 @@ import {
   LogOut, 
   Menu, 
   X,
-  BarChart3,
   Settings,
   ChevronDown,
   Home
@@ -46,9 +45,6 @@ const Dashboard: React.FC = () => {
   const navigation = [
     { name: 'Attendance', id: 'attendance', icon: Clock },
     { name: 'History', id: 'history', icon: Calendar },
-    ...(user?.role === 'admin' ? [
-      { name: 'Reports', id: 'reports', icon: BarChart3 }
-    ] : []),
   ];
 
   const profileMenuItems = [
@@ -61,14 +57,6 @@ const Dashboard: React.FC = () => {
         return <AttendanceCard />;
       case 'history':
         return <AttendanceHistory />;
-      case 'reports':
-        return (
-          <div className="card">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Reports</h2>
-            <p className="text-gray-600">Reports functionality coming soon...</p>
-          </div>
-        );
-
       case 'profile':
         return <Profile />;
       default:
@@ -114,19 +102,6 @@ const Dashboard: React.FC = () => {
                    <Calendar className="h-5 w-5 mr-2" />
                    History
                  </button>
-                 {user?.role === 'admin' && (
-                   <button
-                     onClick={() => setActiveTab('reports')}
-                     className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${
-                       activeTab === 'reports'
-                         ? 'bg-primary-100 text-primary-700'
-                         : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                     }`}
-                   >
-                     <BarChart3 className="h-5 w-5 mr-2" />
-                     Reports
-                   </button>
-                 )}
                </div>
              </div>
 

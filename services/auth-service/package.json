@@ -13,8 +13,7 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "create-admin": "ts-node -r tsconfig-paths/register scripts/create-admin.ts"
+    "test:cov": "jest --coverage"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

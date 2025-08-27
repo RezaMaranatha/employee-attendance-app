@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
-import { CreateEmployeeDto } from './dto/create-employee.dto';
-import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Repository } from 'typeorm';
+import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { UpdateEmployeeDto } from './dto/update-employee.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -71,7 +71,6 @@ export class UserService {
   ): Promise<User> {
     const employee = await this.findById(employeeId);
 
-    // Delete old profile photo if it exists
     if (employee.profilePhotoFilename) {
       const oldPhotoPath = path.join(
         './uploads/profile-photos',
@@ -82,7 +81,6 @@ export class UserService {
       }
     }
 
-    // Update with new photo
     employee.profilePhotoFilename = filename;
     employee.profilePhotoUrl = `/uploads/profile-photos/${filename}`;
 

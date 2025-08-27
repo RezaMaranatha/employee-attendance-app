@@ -1,19 +1,18 @@
 import {
+  ConflictException,
   Injectable,
   UnauthorizedException,
-  ConflictException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcryptjs';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
+import { AuthResponseDto } from './dto/auth-response.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { AuthResponseDto } from './dto/auth-response.dto';
 import { ValidateTokenDto } from './dto/validate-token.dto';
-import { Role } from '../utils/enums/role.enum';
-import * as bcrypt from 'bcryptjs';
-import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -120,7 +119,6 @@ export class AuthService {
     userId: string,
     changePasswordDto: ChangePasswordDto,
   ): Promise<{ message: string }> {
-    // Find user with password for verification
     const user = await this.userRepository.findOne({
       where: { id: userId, isActive: true },
       select: ['id', 'password'],
@@ -130,7 +128,6 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    // Verify current password
     const isCurrentPasswordValid = await bcrypt.compare(
       changePasswordDto.currentPassword,
       user.password,
@@ -139,13 +136,11 @@ export class AuthService {
       throw new UnauthorizedException('Current password is incorrect');
     }
 
-    // Hash new password
     const hashedNewPassword = await bcrypt.hash(
       changePasswordDto.newPassword,
       10,
     );
 
-    // Update password in database
     await this.userRepository.update(userId, {
       password: hashedNewPassword,
     });

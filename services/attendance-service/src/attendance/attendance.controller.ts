@@ -27,14 +27,11 @@ export class AttendanceController {
 
   @Post('clock-in')
   async clockIn(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Body() clockInDto: ClockInDto,
   ): Promise<Attendance> {
-    // ✅ No need for 'as any' casting - fully typed!
-    // console.log(req);
     const { user } = req;
 
-    // Employees can only clock in for themselves, admins can clock in for anyone
     const employeeId =
       user.role === Role.ADMIN && clockInDto.employeeId
         ? clockInDto.employeeId
@@ -48,7 +45,6 @@ export class AttendanceController {
     @Body() clockOutDto: ClockOutDto,
   ): Promise<Attendance> {
     const { user } = req;
-    // Employees can only clock out for themselves, admins can clock out for anyone
     const employeeId =
       user.role === Role.ADMIN && clockOutDto.employeeId
         ? clockOutDto.employeeId

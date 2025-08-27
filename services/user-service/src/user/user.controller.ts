@@ -133,16 +133,13 @@ export class UserController {
       filename,
     );
     console.log(filename);
-    // Check if file exists
     if (!fs.existsSync(photoPath)) {
       return res.status(404).json({ message: 'Photo not found' });
     }
 
-    // Set appropriate headers
     res.setHeader('Content-Type', 'image/jpeg');
     res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
 
-    // Stream the file
     const fileStream = fs.createReadStream(photoPath);
     fileStream.pipe(res);
   }

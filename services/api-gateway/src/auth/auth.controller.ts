@@ -76,4 +76,16 @@ export class AuthController {
     );
     return response.data;
   }
+
+  @Get('validate-token')
+  async validate(@Headers('authorization') auth: string) {
+    const authServiceUrl =
+      process.env.AUTH_SERVICE_URL || 'http://localhost:3001';
+    const response = await firstValueFrom(
+      this.httpService.get(`${authServiceUrl}/auth/validate`, {
+        headers: { authorization: auth },
+      }),
+    );
+    return response.data;
+  }
 }

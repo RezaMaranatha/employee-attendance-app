@@ -1,14 +1,14 @@
 import axios, { AxiosInstance } from 'axios';
-import { 
-  AuthResponse, 
-  LoginRequest, 
-  RegisterRequest, 
-  Attendance, 
-  ClockInRequest, 
-  ClockOutRequest, 
+import {
+  AuthResponse,
+  LoginRequest,
+  RegisterRequest,
+  Attendance,
+  ClockInRequest,
+  ClockOutRequest,
   AttendanceQuery,
   AttendanceStatusResponse,
-  User
+  User,
 } from '../types';
 
 class ApiService {
@@ -41,46 +41,63 @@ class ApiService {
           window.location.href = '/login';
         }
         return Promise.reject(error);
-      }
+      },
     );
   }
 
   // Auth endpoints
   async login(credentials: LoginRequest): Promise<AuthResponse> {
-    const response = await this.api.post<AuthResponse>('/auth/login', credentials);
+    const response = await this.api.post<AuthResponse>(
+      '/auth/login',
+      credentials,
+    );
     return response.data;
   }
 
   async register(userData: RegisterRequest): Promise<AuthResponse> {
-    const response = await this.api.post<AuthResponse>('/auth/register', userData);
+    const response = await this.api.post<AuthResponse>(
+      '/auth/register',
+      userData,
+    );
     return response.data;
   }
 
   async validateToken(): Promise<User> {
-    const response = await this.api.post('/auth/validate-token');
+    const response = await this.api.get('/auth/validate-token');
     return response.data;
   }
 
   // Attendance endpoints
   async clockIn(data: ClockInRequest): Promise<Attendance> {
-    const response = await this.api.post<Attendance>('/attendance/clock-in', data);
+    const response = await this.api.post<Attendance>(
+      '/attendance/clock-in',
+      data,
+    );
     return response.data;
   }
 
   async clockOut(data: ClockOutRequest): Promise<Attendance> {
-    const response = await this.api.post<Attendance>('/attendance/clock-out', data);
+    const response = await this.api.post<Attendance>(
+      '/attendance/clock-out',
+      data,
+    );
     return response.data;
   }
 
   async getAttendanceStatus(): Promise<AttendanceStatusResponse> {
-    const response = await this.api.get<AttendanceStatusResponse>('/attendance/status');
+    const response = await this.api.get<AttendanceStatusResponse>(
+      '/attendance/status',
+    );
     return response.data;
   }
 
   async getMyAttendance(query?: AttendanceQuery): Promise<Attendance[]> {
-    const response = await this.api.get<Attendance[]>('/attendance/my-records', {
-      params: query,
-    });
+    const response = await this.api.get<Attendance[]>(
+      '/attendance/my-records',
+      {
+        params: query,
+      },
+    );
     return response.data;
   }
 
@@ -91,10 +108,16 @@ class ApiService {
     return response.data;
   }
 
-  async getAttendanceByEmployee(employeeId: string, query?: AttendanceQuery): Promise<Attendance[]> {
-    const response = await this.api.get<Attendance[]>(`/attendance/employee/${employeeId}`, {
-      params: query,
-    });
+  async getAttendanceByEmployee(
+    employeeId: string,
+    query?: AttendanceQuery,
+  ): Promise<Attendance[]> {
+    const response = await this.api.get<Attendance[]>(
+      `/attendance/employee/${employeeId}`,
+      {
+        params: query,
+      },
+    );
     return response.data;
   }
 
@@ -123,21 +146,30 @@ class ApiService {
     currentPassword: string;
     newPassword: string;
   }): Promise<{ message: string }> {
-    const response = await this.api.put<{ message: string }>('/auth/change-password', passwordData);
+    const response = await this.api.put<{ message: string }>(
+      '/auth/change-password',
+      passwordData,
+    );
     return response.data;
   }
 
   async uploadProfilePhoto(formData: FormData): Promise<User> {
-    const response = await this.api.post<User>('/users/profile/photo', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
+    const response = await this.api.post<User>(
+      '/users/profile/photo',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       },
-    });
+    );
     return response.data;
   }
 
   async deleteProfilePhoto(): Promise<{ message: string }> {
-    const response = await this.api.delete<{ message: string }>('/users/profile/photo');
+    const response = await this.api.delete<{ message: string }>(
+      '/users/profile/photo',
+    );
     return response.data;
   }
 }

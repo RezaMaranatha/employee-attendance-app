@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Repository } from 'typeorm';
+import { KafkaService } from '../kafka/kafka.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { User } from './entities/user.entity';
@@ -12,6 +13,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private employeeRepository: Repository<User>,
+    private kafkaService: KafkaService,
   ) {}
 
   async create(createEmployeeDto: CreateEmployeeDto): Promise<User> {
@@ -55,14 +57,40 @@ export class UserService {
         : employee.hireDate,
     };
 
+    // Track changes for Kafka event
+    const changes = [];
+    for (const [key, newValue] of Object.entries(updateData)) {
+      if (employee[key] !== newValue) {
+        changes.push({
+          field: key,
+          oldValue: employee[key],
+          newValue: newValue,
+        });
+      }
+    }
+
     await this.employeeRepository.update(id, updateData);
-    return this.findById(id);
+    const updatedEmployee = await this.findById(id);
+
+    // Send Kafka event for user update
+    if (changes.length > 0) {
+      await this.kafkaService.sendUserUpdated(id, updatedEmployee, changes);
+    }
+
+    return updatedEmployee;
   }
 
   async deactivate(id: string): Promise<User> {
     const employee = await this.findById(id);
     employee.isActive = false;
-    return this.employeeRepository.save(employee);
+    const deactivatedEmployee = await this.employeeRepository.save(employee);
+
+    // Send Kafka event for user deactivation
+    await this.kafkaService.sendUserUpdated(id, deactivatedEmployee, [
+      { field: 'isActive', oldValue: true, newValue: false }
+    ]);
+
+    return deactivatedEmployee;
   }
 
   async updateProfilePhoto(

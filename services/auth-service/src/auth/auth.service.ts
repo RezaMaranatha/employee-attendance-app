@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
 import { Repository } from 'typeorm';
+import { KafkaService } from '../kafka/kafka.service';
 import { User } from '../entities/user.entity';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
@@ -20,6 +21,7 @@ export class AuthService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private jwtService: JwtService,
+    private kafkaService: KafkaService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
@@ -79,6 +81,9 @@ export class AuthService {
 
     const savedUser = await this.userRepository.save(user);
     const { password: _, ...userWithoutPassword } = savedUser;
+
+    // Send Kafka event for user creation
+    await this.kafkaService.sendUserCreated(userWithoutPassword);
 
     const payload = {
       sub: savedUser.id,

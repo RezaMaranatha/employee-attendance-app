@@ -8,6 +8,7 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { User } from '../entities/user.entity';
 import { HttpModule } from '@nestjs/axios';
+import { KafkaService } from '../kafka/kafka.service';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { HttpModule } from '@nestjs/axios';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, KafkaService],
   controllers: [AuthController],
   exports: [AuthService],
 })

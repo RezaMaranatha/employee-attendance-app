@@ -17,7 +17,9 @@ export class UserService {
   async create(createEmployeeDto: CreateEmployeeDto): Promise<User> {
     const employee = this.employeeRepository.create({
       ...createEmployeeDto,
-      hireDate: createEmployeeDto.hireDate ? new Date(createEmployeeDto.hireDate) : undefined,
+      hireDate: createEmployeeDto.hireDate
+        ? new Date(createEmployeeDto.hireDate)
+        : undefined,
     });
 
     return this.employeeRepository.save(employee);
@@ -35,19 +37,22 @@ export class UserService {
       where: { id, isActive: true },
     });
 
-    if (!employee) {
-      throw new NotFoundException('User not found');
-    }
+    if (!employee) throw new NotFoundException('User not found');
 
     return employee;
   }
 
-  async update(id: string, updateEmployeeDto: UpdateEmployeeDto): Promise<User> {
+  async update(
+    id: string,
+    updateEmployeeDto: UpdateEmployeeDto,
+  ): Promise<User> {
     const employee = await this.findById(id);
-    
+
     const updateData = {
       ...updateEmployeeDto,
-      hireDate: updateEmployeeDto.hireDate ? new Date(updateEmployeeDto.hireDate) : employee.hireDate,
+      hireDate: updateEmployeeDto.hireDate
+        ? new Date(updateEmployeeDto.hireDate)
+        : employee.hireDate,
     };
 
     await this.employeeRepository.update(id, updateData);
@@ -60,12 +65,18 @@ export class UserService {
     return this.employeeRepository.save(employee);
   }
 
-  async updateProfilePhoto(employeeId: string, filename: string): Promise<User> {
+  async updateProfilePhoto(
+    employeeId: string,
+    filename: string,
+  ): Promise<User> {
     const employee = await this.findById(employeeId);
-    
+
     // Delete old profile photo if it exists
     if (employee.profilePhotoFilename) {
-      const oldPhotoPath = path.join('./uploads/profile-photos', employee.profilePhotoFilename);
+      const oldPhotoPath = path.join(
+        './uploads/profile-photos',
+        employee.profilePhotoFilename,
+      );
       if (fs.existsSync(oldPhotoPath)) {
         fs.unlinkSync(oldPhotoPath);
       }
@@ -74,15 +85,18 @@ export class UserService {
     // Update with new photo
     employee.profilePhotoFilename = filename;
     employee.profilePhotoUrl = `/uploads/profile-photos/${filename}`;
-    
+
     return this.employeeRepository.save(employee);
   }
 
   async deleteProfilePhoto(employeeId: string): Promise<User> {
     const employee = await this.findById(employeeId);
-    
+
     if (employee.profilePhotoFilename) {
-      const photoPath = path.join('./uploads/profile-photos', employee.profilePhotoFilename);
+      const photoPath = path.join(
+        './uploads/profile-photos',
+        employee.profilePhotoFilename,
+      );
       if (fs.existsSync(photoPath)) {
         fs.unlinkSync(photoPath);
       }
@@ -90,7 +104,7 @@ export class UserService {
 
     employee.profilePhotoFilename = null;
     employee.profilePhotoUrl = null;
-    
+
     return this.employeeRepository.save(employee);
   }
 }

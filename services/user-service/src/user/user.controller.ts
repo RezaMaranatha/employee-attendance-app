@@ -1,4 +1,20 @@
-import { Controller, Get, Put, Delete, Param, Body, Post, UploadedFile, UseInterceptors, BadRequestException, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  Delete,
+  Param,
+  Body,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+  BadRequestException,
+  UseGuards,
+  Req,
+  ClassSerializerInterceptor,
+  Res,
+  Query,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from './user.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
@@ -10,34 +26,39 @@ import { RolesGuard } from '../utils/guards/roles.guard';
 import { Roles } from '../utils/decorators/roles.decorator';
 import { Role } from '../utils/enums/role.enum';
 import { AuthenticatedRequest } from '../utils/interfaces/authenticated-request.interface';
+import * as path from 'path';
+import * as fs from 'fs';
+import { Response } from 'express';
 
-@Controller('employees')
+@Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
+@UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
-  constructor(private readonly employeeService: UserService) {}
+  constructor(private readonly userService: UserService) {}
 
   @Post()
   @Roles(Role.ADMIN)
   async create(@Body() createEmployeeDto: CreateEmployeeDto): Promise<User> {
-    return this.employeeService.create(createEmployeeDto);
+    return this.userService.create(createEmployeeDto);
   }
 
-  @Get()
+  @Get('findAll')
   @Roles(Role.ADMIN)
   async findAll(): Promise<User[]> {
-    return this.employeeService.findAll();
+    return this.userService.findAll();
   }
 
   @Get('profile')
   async getProfile(@Req() req: AuthenticatedRequest): Promise<User> {
     const { user } = req;
-    return this.employeeService.findById(user.id);
+    return this.userService.findById(user.id);
   }
 
-  @Get(':id')
+  @Get()
   @Roles(Role.ADMIN)
-  async findOne(@Param('id') id: string): Promise<User> {
-    return this.employeeService.findById(id);
+  async findOne(@Query('id') id: string): Promise<User> {
+    console.log('get one');
+    return this.userService.findById(id);
   }
 
   @Put('profile')
@@ -46,7 +67,7 @@ export class UserController {
     @Body() updateEmployeeDto: UpdateEmployeeDto,
   ): Promise<User> {
     const { user } = req;
-    return this.employeeService.update(user.id, updateEmployeeDto);
+    return this.userService.update(user.id, updateEmployeeDto);
   }
 
   @Put(':id')
@@ -55,13 +76,13 @@ export class UserController {
     @Param('id') id: string,
     @Body() updateEmployeeDto: UpdateEmployeeDto,
   ): Promise<User> {
-    return this.employeeService.update(id, updateEmployeeDto);
+    return this.userService.update(id, updateEmployeeDto);
   }
 
   @Delete(':id')
   @Roles(Role.ADMIN)
   async deactivate(@Param('id') id: string): Promise<User> {
-    return this.employeeService.deactivate(id);
+    return this.userService.deactivate(id);
   }
 
   @Post('profile/photo')
@@ -74,7 +95,7 @@ export class UserController {
       throw new BadRequestException('No file uploaded');
     }
     const { user } = req;
-    return this.employeeService.updateProfilePhoto(user.id, file.filename);
+    return this.userService.updateProfilePhoto(user.id, file.filename);
   }
 
   @Post(':id/photo')
@@ -87,18 +108,42 @@ export class UserController {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
-    return this.employeeService.updateProfilePhoto(id, file.filename);
+    return this.userService.updateProfilePhoto(id, file.filename);
   }
 
   @Delete('profile/photo')
   async deleteProfilePhoto(@Req() req: AuthenticatedRequest): Promise<User> {
     const { user } = req;
-    return this.employeeService.deleteProfilePhoto(user.id);
+    return this.userService.deleteProfilePhoto(user.id);
   }
 
   @Delete(':id/photo')
   @Roles(Role.ADMIN)
   async deletePhoto(@Param('id') id: string): Promise<User> {
-    return this.employeeService.deleteProfilePhoto(id);
+    return this.userService.deleteProfilePhoto(id);
+  }
+
+  @Get('photo')
+  async servePhoto(@Query('filename') filename: string, @Res() res: Response) {
+    console.log(filename);
+    const photoPath = path.join(
+      process.cwd(),
+      'uploads',
+      'profile-photos',
+      filename,
+    );
+    console.log(filename);
+    // Check if file exists
+    if (!fs.existsSync(photoPath)) {
+      return res.status(404).json({ message: 'Photo not found' });
+    }
+
+    // Set appropriate headers
+    res.setHeader('Content-Type', 'image/jpeg');
+    res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
+
+    // Stream the file
+    const fileStream = fs.createReadStream(photoPath);
+    fileStream.pipe(res);
   }
 }

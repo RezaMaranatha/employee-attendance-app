@@ -34,7 +34,7 @@ import { JwtStrategy } from './utils/strategies/jwt.strategy';
       password: process.env.DB_PASSWORD || 'password',
       database: process.env.DB_DATABASE || 'employee_service',
       entities: [User],
-      synchronize: process.env.NODE_ENV !== 'production',
+      synchronize: false,
     }),
     UserModule,
   ],

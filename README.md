@@ -5,12 +5,14 @@ A comprehensive employee attendance management system built with NestJS, TypeScr
 ## Features
 
 - **Authentication & Authorization**
+
   - Role-based access control (Admin/Employee)
   - Admin-only employee registration
   - JWT-based authentication
   - Secure password hashing with bcrypt
 
 - **Employee Management**
+
   - Employee profiles with personal information
   - Employee CRUD operations
   - Active/inactive employee status
@@ -38,18 +40,21 @@ A comprehensive employee attendance management system built with NestJS, TypeScr
 ## Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd employee-attendance-app
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables**
    Create a `.env` file in the root directory:
+
    ```env
    # Database Configuration
    DB_HOST=localhost
@@ -59,7 +64,7 @@ A comprehensive employee attendance management system built with NestJS, TypeScr
    DB_DATABASE=employee_attendance
 
    # JWT Configuration
-   JWT_SECRET=your-super-secret-jwt-key-here
+   JWT_SECRET=default-secret
    JWT_EXPIRES_IN=7d
 
    # Application Configuration
@@ -68,20 +73,25 @@ A comprehensive employee attendance management system built with NestJS, TypeScr
    ```
 
 4. **Create the database**
+
    ```sql
    CREATE DATABASE employee_attendance;
    ```
 
 5. **Create the initial admin user**
+
    ```bash
    npm run create-admin
    ```
+
    This creates an admin user with:
+
    - Email: `admin@company.com`
    - Password: `admin123`
    - Role: `admin`
 
 6. **Run the application**
+
    ```bash
    # Development mode with auto-reload
    npm run start:dev
@@ -123,6 +133,7 @@ A comprehensive employee attendance management system built with NestJS, TypeScr
 ## API Usage Examples
 
 ### Login as Admin
+
 ```bash
 curl -X POST http://localhost:3000/auth/login \
   -H "Content-Type: application/json" \
@@ -133,6 +144,7 @@ curl -X POST http://localhost:3000/auth/login \
 ```
 
 ### Register Employee (Admin only)
+
 ```bash
 curl -X POST http://localhost:3000/auth/register \
   -H "Content-Type: application/json" \
@@ -149,6 +161,7 @@ curl -X POST http://localhost:3000/auth/register \
 ```
 
 ### Login
+
 ```bash
 curl -X POST http://localhost:3000/auth/login \
   -H "Content-Type: application/json" \
@@ -159,6 +172,7 @@ curl -X POST http://localhost:3000/auth/login \
 ```
 
 ### Clock In (requires authentication)
+
 ```bash
 curl -X POST http://localhost:3000/attendance/clock-in \
   -H "Content-Type: application/json" \
@@ -169,6 +183,7 @@ curl -X POST http://localhost:3000/attendance/clock-in \
 ```
 
 ### Clock Out (requires authentication)
+
 ```bash
 curl -X POST http://localhost:3000/attendance/clock-out \
   -H "Content-Type: application/json" \
@@ -179,6 +194,7 @@ curl -X POST http://localhost:3000/attendance/clock-out \
 ```
 
 ### Upload Profile Photo (requires authentication)
+
 ```bash
 curl -X POST http://localhost:3000/employees/profile/photo \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
@@ -186,6 +202,7 @@ curl -X POST http://localhost:3000/employees/profile/photo \
 ```
 
 ### Delete Profile Photo (requires authentication)
+
 ```bash
 curl -X DELETE http://localhost:3000/employees/profile/photo \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
@@ -242,7 +259,9 @@ npm run build
 ## Important Notes
 
 ### UUID Primary Keys
+
 All entities now use UUID as primary keys instead of auto-incrementing integers. This provides:
+
 - Better security (non-sequential IDs)
 - Distributed system compatibility
 - Reduced database coupling
@@ -250,7 +269,9 @@ All entities now use UUID as primary keys instead of auto-incrementing integers.
 Example employee ID: `550e8400-e29b-41d4-a716-446655440000`
 
 ### JWT Payload Structure
+
 JWT tokens now include complete user context:
+
 ```json
 {
   "sub": "550e8400-e29b-41d4-a716-446655440000",
@@ -264,6 +285,7 @@ JWT tokens now include complete user context:
 ## Database Schema
 
 ### Employees Table
+
 - `id` (Primary Key - UUID)
 - `email` (Unique)
 - `password` (Hashed)
@@ -281,6 +303,7 @@ JWT tokens now include complete user context:
 - `updatedAt`
 
 ### Attendances Table
+
 - `id` (Primary Key - UUID)
 - `employeeId` (Foreign Key - UUID)
 - `clockInTime`

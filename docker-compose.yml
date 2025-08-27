@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - auth_db_data:/var/lib/postgresql/data
 
@@ -20,7 +20,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     ports:
-      - "5433:5432"
+      - '5433:5432'
     volumes:
       - employee_db_data:/var/lib/postgresql/data
 
@@ -31,7 +31,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     ports:
-      - "5434:5432"
+      - '5434:5432'
     volumes:
       - attendance_db_data:/var/lib/postgresql/data
 
@@ -41,7 +41,7 @@ services:
       context: ./services/auth-service
       dockerfile: Dockerfile
     ports:
-      - "3001:3001"
+      - '3001:3001'
     environment:
       - NODE_ENV=development
       - DB_HOST=auth-db
@@ -49,7 +49,7 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=password
       - DB_DATABASE=auth_service
-      - JWT_SECRET=your-super-secret-jwt-key-here
+      - JWT_SECRET=default-secret
       - JWT_EXPIRES_IN=7d
       - PORT=3001
     depends_on:
@@ -63,7 +63,7 @@ services:
       context: ./services/employee-service
       dockerfile: Dockerfile
     ports:
-      - "3002:3002"
+      - '3002:3002'
     environment:
       - NODE_ENV=development
       - DB_HOST=employee-db
@@ -83,7 +83,7 @@ services:
       context: ./services/attendance-service
       dockerfile: Dockerfile
     ports:
-      - "3003:3003"
+      - '3003:3003'
     environment:
       - NODE_ENV=development
       - DB_HOST=attendance-db
@@ -103,7 +103,7 @@ services:
       context: ./services/api-gateway
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=development
       - PORT=3000

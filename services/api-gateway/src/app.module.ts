@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 import { AuthModule } from './auth/auth.module';
-import { EmployeeModule } from './employee/employee.module';
+import { UserModule } from './user/user.module';
 import { AttendanceModule } from './attendance/attendance.module';
 import { HealthController } from './health/health.controller';
 
@@ -16,7 +16,7 @@ import { HealthController } from './health/health.controller';
       maxRedirects: 5,
     }),
     AuthModule,
-    EmployeeModule,
+    UserModule,
     AttendanceModule,
   ],
   controllers: [HealthController],

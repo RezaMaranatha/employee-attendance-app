@@ -32,7 +32,7 @@ DB_PASSWORD=password
 DB_DATABASE=postgres
 
 # JWT Configuration
-JWT_SECRET=your-super-secret-jwt-key-here
+JWT_SECRET=default-secret
 JWT_EXPIRES_IN=7d
 
 # Application Configuration

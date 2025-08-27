@@ -1,10 +1,15 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
 import { Attendance, AttendanceStatus } from './entities/attendance.entity';
 import { ClockInDto } from './dto/clock-in.dto';
 import { ClockOutDto } from './dto/clock-out.dto';
 import { AttendanceQueryDto } from './dto/attendance-query.dto';
+import { log } from 'console';
 
 @Injectable()
 export class AttendanceService {
@@ -15,6 +20,7 @@ export class AttendanceService {
 
   async clockIn(clockInDto: ClockInDto): Promise<Attendance> {
     // Check if employee already has an active clock-in
+    console.log(clockInDto);
     const activeAttendance = await this.attendanceRepository.findOne({
       where: {
         employeeId: clockInDto.employeeId,
@@ -22,8 +28,8 @@ export class AttendanceService {
       },
       order: { clockInTime: 'DESC' },
     });
-
-    if (activeAttendance) {
+    console.log(activeAttendance);
+    if (activeAttendance !== null && activeAttendance !== undefined) {
       throw new BadRequestException('Employee is already clocked in');
     }
 
@@ -52,14 +58,17 @@ export class AttendanceService {
     }
 
     const clockOutTime = new Date();
-    const hoursWorked = this.calculateHoursWorked(activeAttendance.clockInTime, clockOutTime);
+    const hoursWorked = this.calculateHoursWorked(
+      activeAttendance.clockInTime,
+      clockOutTime,
+    );
 
     activeAttendance.clockOutTime = clockOutTime;
     activeAttendance.status = AttendanceStatus.CLOCKED_OUT;
     activeAttendance.hoursWorked = hoursWorked;
-    
+
     if (clockOutDto.notes) {
-      activeAttendance.notes = activeAttendance.notes 
+      activeAttendance.notes = activeAttendance.notes
         ? `${activeAttendance.notes}. Clock-out notes: ${clockOutDto.notes}`
         : clockOutDto.notes;
     }
@@ -71,7 +80,9 @@ export class AttendanceService {
     const query = this.attendanceRepository.createQueryBuilder('attendance');
 
     if (queryDto.employeeId) {
-      query.andWhere('attendance.employeeId = :employeeId', { employeeId: queryDto.employeeId });
+      query.andWhere('attendance.employeeId = :employeeId', {
+        employeeId: queryDto.employeeId,
+      });
     }
 
     if (queryDto.startDate && queryDto.endDate) {
@@ -80,25 +91,39 @@ export class AttendanceService {
         endDate: queryDto.endDate,
       });
     } else if (queryDto.startDate) {
-      query.andWhere('attendance.clockInTime >= :startDate', { startDate: queryDto.startDate });
+      query.andWhere('attendance.clockInTime >= :startDate', {
+        startDate: queryDto.startDate,
+      });
     } else if (queryDto.endDate) {
-      query.andWhere('attendance.clockInTime <= :endDate', { endDate: queryDto.endDate });
+      query.andWhere('attendance.clockInTime <= :endDate', {
+        endDate: queryDto.endDate,
+      });
     }
 
-    return query
-      .orderBy('attendance.clockInTime', 'DESC')
-      .getMany();
+    return query.orderBy('attendance.clockInTime', 'DESC').getMany();
   }
 
-  async findByEmployee(employeeId: string, queryDto: Partial<AttendanceQueryDto> = {}): Promise<Attendance[]> {
+  async findByEmployee(
+    employeeId: string,
+    queryDto: Partial<AttendanceQueryDto> = {},
+  ): Promise<Attendance[]> {
     const whereClause: any = { employeeId };
 
     if (queryDto.startDate && queryDto.endDate) {
-      whereClause.clockInTime = Between(new Date(queryDto.startDate), new Date(queryDto.endDate));
+      whereClause.clockInTime = Between(
+        new Date(queryDto.startDate),
+        new Date(queryDto.endDate),
+      );
     } else if (queryDto.startDate) {
-      whereClause.clockInTime = Between(new Date(queryDto.startDate), new Date());
+      whereClause.clockInTime = Between(
+        new Date(queryDto.startDate),
+        new Date(),
+      );
     } else if (queryDto.endDate) {
-      whereClause.clockInTime = Between(new Date('1970-01-01'), new Date(queryDto.endDate));
+      whereClause.clockInTime = Between(
+        new Date('1970-01-01'),
+        new Date(queryDto.endDate),
+      );
     }
 
     return this.attendanceRepository.find({
@@ -119,7 +144,9 @@ export class AttendanceService {
     return attendance;
   }
 
-  async getCurrentStatus(employeeId: string): Promise<{ isClocked: boolean; attendance?: Attendance }> {
+  async getCurrentStatus(
+    employeeId: string,
+  ): Promise<{ isClocked: boolean; attendance?: Attendance }> {
     const activeAttendance = await this.attendanceRepository.findOne({
       where: {
         employeeId,
